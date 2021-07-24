@@ -1,0 +1,64 @@
+'''
+author @harsha gupta
+to save the images in a folder , save this .py script in that
+folder in C:\Users\lenovo\folder_ name
+'''
+
+from selenium import webdriver
+from bs4 import BeautifulSoup
+import requests
+import urllib.request
+import time
+import sys
+import os
+
+#taking user input
+print("What images do you want to download?")
+
+download=input() #already in strings
+site='https://www.google.com/search?tbm=isch&q='+download
+
+
+#providing driver path
+driver=webdriver.Firefox(executable_path='C:\drivers-web\geckodriver.exe')
+#passing site URL
+driver.get(site)
+
+#drive.execute_script("window.scrollBy(0,document.body.scrollingHeight)") #for scrolling
+i=0
+while i<7:  #scrolls 7 times only if available
+    driver.execute_script("window.scrollBy(0,document.body.scrollHeight)") #for scrolling
+
+    try:  # for clicking :"show more result" html inspect
+        driver.find_element_by_xpath("/html/body/div[2]/c-wiz/div[3]/div[1]/div/div/div/div/div[5]/input").click()
+    except Exception as e:
+                        pass
+    time.sleep(5)
+    i+=1
+
+#parsing
+soup=BeautifulSoup(driver.page_source,'html.parser')
+driver.close()
+#scraping image urls 
+img_tags=soup.find_all("img",class_="rg_i") #class used for images
+                            
+count=0
+for i in img_tags:
+#passing image url one at a time and downloading
+     try :
+                    urllib.request.urlretrieve(i['src'],str(count)+".jpg")
+                    count+=1
+                   
+     except Exception as e:
+                              pass
+print("Number of img downloaded="+str(count),end='\r')          
+
+
+
+
+
+
+
+                                     
+                                     
+                                     
